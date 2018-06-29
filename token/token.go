@@ -2,7 +2,6 @@ package token
 
 import (
 	"fmt"
-	"go/token"
 )
 
 func main() {
@@ -75,20 +74,3 @@ func LookUpIdent(ident string) TokenType {
 	}
 	return IDENT
 }
-
-type LetStatement struct {
-	Token token.Token // token.Let
-	Name  *Identifier
-	Value Expression
-}
-
-func (ls *LetStatement) statementNode()       {}
-func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
-
-type Identifier struct {
-	Token token.Token // token.IDENT
-	Value string
-}
-
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
