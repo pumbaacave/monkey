@@ -7,6 +7,7 @@ import (
 	"monkey/token"
 )
 
+// Parser intakes Lexer and creates AST
 type Parser struct {
 	l *lexer.Lexer
 
