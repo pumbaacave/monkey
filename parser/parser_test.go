@@ -551,3 +551,33 @@ func TestFunctionParameterParsing(t *testing.T) {
 		}
 	}
 }
+
+func TestCallExpressionParsing(t *testing.T) {
+	input := "add(1, 2 * 3, 4 + 5);"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParsrErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program does not contain %d statement. got=%d", 1, len(program.Statements))
+	}
+	s, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("prgram.Statement[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	ce, ok := s.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("exp not *asp.CallExpression. get=%T", s.Expression)
+	}
+
+	if len(ce.Arguments) != 3 {
+		t.Fatalf("function literal param wrong. what 3, get=%d, %v", len(ce.Arguments), ce.Arguments)
+	}
+
+	testLiteralExpression(t, ce.Arguments[0], 1)
+	testInfixExpression(t, ce.Arguments[1], 2, "*", 3)
+	testInfixExpression(t, ce.Arguments[2], 4, "*", 5)
+}
