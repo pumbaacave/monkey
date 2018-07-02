@@ -102,6 +102,9 @@ func (p *Parser) peekError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
+func (p *Parser) appendError(msg string) {
+	p.errors = append(p.errors, msg)
+}
 func (p *Parser) peekPrecedence() int {
 	if p, ok := precedences[p.peekToken.Type]; ok {
 		return p
@@ -146,6 +149,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	}
 }
 
+// let x = oneExpression;
 func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: p.curToken}
 
@@ -161,15 +165,18 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 	p.nextToken()
 
+	// parseExpression parse single exp only & will not forward token postion
 	stmt.Value = p.parseExpression(LOWEST)
 
 	for !p.curTokenIs(token.SEMICOLON) {
+		//p.appendError(fmt.Sprintf("redundant token %s", p.curToken.Literal))
 		p.nextToken()
 	}
 
 	return stmt
 }
 
+// return x = oneExpression;
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
 
@@ -184,6 +191,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	return stmt
 }
 
+// true: exp; || false exp
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	s := &ast.ExpressionStatement{Token: p.curToken}
 
@@ -202,6 +210,7 @@ func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
+	// operate as prefix-able token
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
 		p.noPrefixParseFnError(p.curToken.Type)
@@ -209,6 +218,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	leftExp := prefix()
 
+	// if rightExp exists, infixFuncParse
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
