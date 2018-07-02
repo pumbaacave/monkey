@@ -579,5 +579,5 @@ func TestCallExpressionParsing(t *testing.T) {
 
 	testLiteralExpression(t, ce.Arguments[0], 1)
 	testInfixExpression(t, ce.Arguments[1], 2, "*", 3)
-	testInfixExpression(t, ce.Arguments[2], 4, "*", 5)
+	testInfixExpression(t, ce.Arguments[2], 4, "+", 5)
 }
