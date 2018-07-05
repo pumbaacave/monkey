@@ -188,6 +188,24 @@ func TestFuctionObject(t *testing.T) {
 	}
 }
 
+func TestFuctionApplicationObject(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a = fn(x) { x;}; a(5);", 5},
+		{"let a = fn(x) { return x; }; a(5);", 5},
+		{"let double = fn(x) { x * 2 }; double(5);", 10},
+		{"let add = fn(x, y){x + y;}; add(5, 5);", 10},
+		{"let add = fn(x, y){x + y;}; add(5 + 5, add(5, 5));", 20},
+		{"fn(x) { x; }(5)", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -252,4 +270,14 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 		return false
 	}
 	return true
+}
+
+func TestClosures(t *testing.T) {
+	input := `
+	let Adder = fn(x){
+		fn(y) { x + y }
+	};
+	let addTwo = Adder(2);
+	addTwo(2);`
+	testIntegerObject(t, testEval(input), 4)
 }
