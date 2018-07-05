@@ -10,7 +10,10 @@ func TestHelloWorld(t *testing.T) {
 }
 
 func TestNextToken(t *testing.T) {
-	input := `=+(){},;`
+	input := `=+(){},;
+	"foobar"
+	"foo bar"
+	`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -24,6 +27,8 @@ func TestNextToken(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.STRING, "foobar"},
+		{token.STRING, "foo bar"},
 		{token.EOF, ""},
 	}
 
