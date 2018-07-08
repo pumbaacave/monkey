@@ -43,6 +43,50 @@ func TestModify(t *testing.T) {
 			&InfixExpression{Left: two(), Operator: "+", Right: one()},
 			&InfixExpression{Left: two(), Operator: "+", Right: two()},
 		},
+		{
+			&PrefixExpression{Operator: "-", Right: one()},
+			&PrefixExpression{Operator: "-", Right: two()},
+		},
+		{
+			&IndexExpression{Left: one(), Index: one()},
+			&IndexExpression{Left: two(), Index: two()},
+		},
+		{
+			&IfExpression{
+				Condition: one(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+			},
+			&IfExpression{
+				Condition: two(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+			},
+		},
+		{
+			&ReturnStatement{ReturnValue: one()},
+			&ReturnStatement{ReturnValue: two()},
+		},
+		{
+			&LetStatement{Value: one()},
+			&LetStatement{Value: two()},
+		},
 	}
 
 	for _, tt := range tests {
