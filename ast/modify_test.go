@@ -87,6 +87,28 @@ func TestModify(t *testing.T) {
 			&LetStatement{Value: one()},
 			&LetStatement{Value: two()},
 		},
+		{
+			&FunctionLiteral{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+			},
+			&FunctionLiteral{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+			},
+		},
+		{
+			&ArrayLiteral{Elements: []Expression{one(), one()}},
+			&ArrayLiteral{Elements: []Expression{two(), two()}},
+		},
 	}
 
 	for _, tt := range tests {
@@ -97,5 +119,27 @@ func TestModify(t *testing.T) {
 			t.Errorf("not equal. got=%#v, want=%#v",
 				modified, tt.expected)
 		}
+	}
+
+	// test HashLiteral
+	hashLiteral := &HashLiteral{
+		Pairs: map[Expression]Expression{
+			one(): one(),
+			one(): one(),
+		},
+	}
+
+	Modify(hashLiteral, turnOneIntoTwo)
+
+	for key, val := range hashLiteral.Pairs {
+		key, _ := key.(*IntegerLiteral)
+		if key.Value != 2 {
+			t.Errorf("value is not %d, got=%d", 2, key.Value)
+		}
+		val, _ := val.(*IntegerLiteral)
+		if val.Value != 2 {
+			t.Errorf("value is not %d, got=%d", 2, val.Value)
+		}
+
 	}
 }
