@@ -738,3 +738,44 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 
 }
+
+func TestMacroLiteralExpression(t *testing.T) {
+	input := `macro(x, y) { x + y ;}`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParsrErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program does not contain %d statement. got=%d", 1, len(program.Statements))
+	}
+	s, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("prgram.Statement[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	macro, ok := s.Expression.(*ast.MacroLiteral)
+	if !ok {
+		t.Fatalf("exp not *asp.MacroLiteral. get=%T", s.Expression)
+	}
+
+	if len(macro.Parameters) != 2 {
+		t.Fatalf("macro literal param wrong. what 2, get=%d, %v", len(macro.Parameters), macro.Parameters)
+	}
+
+	testLiteralExpression(t, macro.Parameters[0], "x")
+	testLiteralExpression(t, macro.Parameters[1], "y")
+	if len(macro.Body.Statements) != 1 {
+		t.Fatalf("macro.Body.Statements hat not 1 statements. got=%d", len(macro.Body.Statements))
+	}
+
+	b, ok := macro.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("macro body stmt is not ast.ExpressionStatement. got=%T",
+			macro.Body.Statements[0])
+	}
+
+	testInfixExpression(t, b.Expression, "x", "+", "y")
+}
