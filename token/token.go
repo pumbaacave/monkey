@@ -53,6 +53,7 @@ const (
 
 	// keyword
 	FUNCTION = "FUNCTION"
+	MACRO    = "MACRO"
 	LET      = "LET"
 	TRUE     = "TRUE"
 	FALSE    = "FALSE"
@@ -63,6 +64,7 @@ const (
 
 var keywords = map[string]TokenType{
 	"fn":     FUNCTION,
+	"macro":  MACRO,
 	"let":    LET,
 	"true":   TRUE,
 	"false":  FALSE,
